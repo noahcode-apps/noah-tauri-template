@@ -1,7 +1,7 @@
 [package]
 name = "noah-tauri-template"
-version = "0.0.1"
-description = "A Tauri App"
+version = "0.0.0" # We keep version in package.json
+description = "noah-tauri-template"
 authors = ["you"]
 edition = "2021"
 
