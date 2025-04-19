@@ -1,0 +1,45 @@
+name: 📦 Prepare Release
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - README.md
+      - CHANGELOG.md
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release:
+    name: 📦 Prepare Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: 🆙 Set new version
+        id: set_version
+        run: |
+          pnpm changeset status -- --output=release.json
+          NEW_VERSION=$(jq -r '.releases[0].newVersion' release.json)
+          echo "NEW_VERSION=${NEW_VERSION}" >> $GITHUB_OUTPUT
+          rm release.json
+
+      - name: 🔀 Create Release Pull Request
+        uses: changesets/action@v1
+        with:
+          title: "release v${{ steps.set_version.outputs.NEW_VERSION }}"
+          commit: "release v${{ steps.set_version.outputs.NEW_VERSION }}"
+          setupGitUser: false
+          version: pnpm pub:version
+          publish: pnpm pub:publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_GITHUB_TOKEN }}
