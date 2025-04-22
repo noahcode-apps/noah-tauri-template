@@ -1,20 +1,28 @@
 import { RouterProvider } from "react-router-dom";
+import { TauriStoreProvider } from "react-tauri-store";
 import "./App.css";
 import { ThemeProvider } from "./components/theme-provider";
 import { Toaster } from "./components/ui/sonner";
-import { router } from "./router";
+import { STORE_DEFAULT_VALUES } from "./constants/store";
+import { router } from "./lib/router";
+import { storeFileName } from "./lib/utils";
 
 function App() {
 	return (
-		<ThemeProvider
-			attribute="class"
-			defaultTheme="system"
-			enableSystem
-			disableTransitionOnChange
+		<TauriStoreProvider
+			filePath={storeFileName()}
+			defaultValues={STORE_DEFAULT_VALUES}
 		>
-			<RouterProvider router={router} />
-			<Toaster />
-		</ThemeProvider>
+			<ThemeProvider
+				attribute="class"
+				defaultTheme="system"
+				enableSystem
+				disableTransitionOnChange
+			>
+				<RouterProvider router={router} />
+				<Toaster />
+			</ThemeProvider>
+		</TauriStoreProvider>
 	);
 }
 
